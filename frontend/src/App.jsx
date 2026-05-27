@@ -41,25 +41,25 @@ function App() {
 
     setLoading(true);
 
-    fetch("http://localhost:8000/trips")
+    fetch("http://localhost:8001/trips")
       .then((response) => response.json())
       .then((data) => {
         setTrips(data);
       });
 
-    fetch("http://localhost:8000/customers")
+    fetch("http://localhost:8001/customers")
       .then((response) => response.json())
       .then((data) => {
         setCustomers(data);
       });
 
-    fetch("http://localhost:8000/vendors")
+    fetch("http://localhost:8001/vendors")
       .then((response) => response.json())
       .then((data) => {
         setVendors(data);
       });
 
-    fetch("http://localhost:8000/document-templates")
+    fetch("http://localhost:8001/document-templates")
       .then((response) => response.json())
       .then((data) => {
         setTemplates(data);
@@ -73,7 +73,7 @@ function App() {
   }, [user]);
 
   const loginUser = async () => {
-    const response = await fetch("http://localhost:8000/login", {
+    const response = await fetch("http://localhost:8001/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -99,7 +99,7 @@ function App() {
   };
 
   const createTrip = async () => {
-    const response = await fetch("http://localhost:8000/trips", {
+    const response = await fetch("http://localhost:8001/trips", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -124,7 +124,7 @@ function App() {
 
   const createCustomer = async () => {
     const response = await fetch(
-      "http://localhost:8000/customers",
+      "http://localhost:8001/customers",
       {
         method: "POST",
         headers: {
@@ -149,7 +149,7 @@ function App() {
 
   const createVendor = async () => {
     const response = await fetch(
-      "http://localhost:8000/vendors",
+      "http://localhost:8001/vendors",
       {
         method: "POST",
         headers: {
@@ -174,7 +174,7 @@ function App() {
 
   const createTemplate = async () => {
     const response = await fetch(
-      "http://localhost:8000/document-templates",
+      "http://localhost:8001/document-templates",
       {
         method: "POST",
         headers: {
@@ -201,7 +201,7 @@ function App() {
   };
 
   const deleteTrip = async (tripId) => {
-    await fetch(`http://localhost:8000/trips/${tripId}`, {
+    await fetch(`http://localhost:8001/trips/${tripId}`, {
       method: "DELETE",
     });
 
