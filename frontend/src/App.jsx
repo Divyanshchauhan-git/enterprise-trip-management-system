@@ -36,44 +36,44 @@ function App() {
     JSON.parse(localStorage.getItem("user")) || null
   );
 
-  useEffect(() => {
-    if (!user) return;
+ useEffect(() => {
+  if (!user) return;
 
-    setLoading(true);
+  setLoading(true);
 
-    fetch("http://localhost:8001/trips")
-      .then((response) => response.json())
-      .then((data) => {
-        setTrips(data);
-      });
+  fetch("https://enterprise-trip-management-system-1.onrender.com/trips")
+    .then((response) => response.json())
+    .then((data) => {
+      setTrips(data);
+    });
 
-    fetch("http://localhost:8001/customers")
-      .then((response) => response.json())
-      .then((data) => {
-        setCustomers(data);
-      });
+  fetch("https://enterprise-trip-management-system-1.onrender.com/customers")
+    .then((response) => response.json())
+    .then((data) => {
+      setCustomers(data);
+    });
 
-    fetch("http://localhost:8001/vendors")
-      .then((response) => response.json())
-      .then((data) => {
-        setVendors(data);
-      });
+  fetch("https://enterprise-trip-management-system-1.onrender.com/vendors")
+    .then((response) => response.json())
+    .then((data) => {
+      setVendors(data);
+    });
 
-    fetch("http://localhost:8001/document-templates")
-      .then((response) => response.json())
-      .then((data) => {
-        setTemplates(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setError("Failed to load data");
-        setLoading(false);
-      });
-  }, [user]);
+  fetch("https://enterprise-trip-management-system-1.onrender.com/document-templates")
+    .then((response) => response.json())
+    .then((data) => {
+      setTemplates(data);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error(error);
+      setError("Failed to load data");
+      setLoading(false);
+    });
+}, [user]);
 
   const loginUser = async () => {
-    const response = await fetch("http://localhost:8001/login", {
+    const response = await fetch("https://enterprise-trip-management-system-1.onrender.com/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -99,7 +99,7 @@ function App() {
   };
 
   const createTrip = async () => {
-    const response = await fetch("http://localhost:8001/trips", {
+    const response = await fetch("https://enterprise-trip-management-system-1.onrender.com/trips", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -124,7 +124,7 @@ function App() {
 
   const createCustomer = async () => {
     const response = await fetch(
-      "http://localhost:8001/customers",
+      "https://enterprise-trip-management-system-1.onrender.com/customers",
       {
         method: "POST",
         headers: {
@@ -149,7 +149,7 @@ function App() {
 
   const createVendor = async () => {
     const response = await fetch(
-      "http://localhost:8001/vendors",
+      "https://enterprise-trip-management-system-1.onrender.com/vendors",
       {
         method: "POST",
         headers: {
@@ -174,7 +174,7 @@ function App() {
 
   const createTemplate = async () => {
     const response = await fetch(
-      "http://localhost:8001/document-templates",
+      "https://enterprise-trip-management-system-1.onrender.com/document-templates",
       {
         method: "POST",
         headers: {
@@ -201,7 +201,7 @@ function App() {
   };
 
   const deleteTrip = async (tripId) => {
-    await fetch(`http://localhost:8001/trips/${tripId}`, {
+    await fetch(`https://enterprise-trip-management-system-1.onrender.com/trips/${tripId}`, {
       method: "DELETE",
     });
 
