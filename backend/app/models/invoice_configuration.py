@@ -10,6 +10,7 @@ class InvoiceConfiguration(Base):
 
     customer_id = Column(Integer, ForeignKey("customers.id"))
     shipto_id = Column(Integer, ForeignKey("shipto_locations.id"))
+    vendor_id = Column(Integer, ForeignKey("vendors.id"), nullable=True)
 
     invoice_time = Column(JSON)
 
@@ -19,3 +20,4 @@ class InvoiceConfiguration(Base):
 
     customer = relationship("Customer")
     shipto = relationship("ShipTo")
+    vendor = relationship("Vendor")

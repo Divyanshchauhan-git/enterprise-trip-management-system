@@ -212,8 +212,10 @@ export default function App() {
   const [shiptoName, setShiptoName] = useState("");
   const [shiptoAddress, setShiptoAddress] = useState("");
 
+  // ── Invoice Config states
   const [invCustomerId, setInvCustomerId] = useState("");
   const [invShiptoId, setInvShiptoId] = useState("");
+  const [invVendorId, setInvVendorId] = useState(""); // NEW
   const [invShiptos, setInvShiptos] = useState([]);
   const [invProducts, setInvProducts] = useState([{ product_id: "", quantity: "", unit_price: "" }]);
   const [invFees, setInvFees] = useState([{ fee_id: "", quantity: "1", rate: "" }]);
@@ -364,79 +366,39 @@ export default function App() {
     if (ok) setSendDestEmail("");
   };
 
-  // ── FIXED: createShipTo now reloads all data after adding
   const createShipTo = async () => {
     if (!shiptoCustomerId) { showToast("Please select a customer first", "error"); return; }
     if (!shiptoName) { showToast("Please enter a location name", "error"); return; }
     if (!shiptoAddress) { showToast("Please enter an address", "error"); return; }
-    const ok = await post("shipto", {
-      customer_id: Number(shiptoCustomerId),
-      name: shiptoName,
-      address: shiptoAddress
-    }, setShiptos);
-    if (ok) {
-      setShiptoName("");
-      setShiptoAddress("");
-      await loadAll();
-    }
+    const ok = await post("shipto", { customer_id: Number(shiptoCustomerId), name: shiptoName, address: shiptoAddress }, setShiptos);
+    if (ok) { setShiptoName(""); setShiptoAddress(""); await loadAll(); }
   };
 
-  // ── FIXED: filters from already loaded shiptos state
   const loadShiptosForCustomer = (customerId) => {
-    if (!customerId) {
-      setInvShiptos([]);
-      setInvShiptoId("");
-      return;
-    }
+    if (!customerId) { setInvShiptos([]); setInvShiptoId(""); return; }
     const filtered = shiptos.filter(s => s.customer_id === Number(customerId));
     setInvShiptos(filtered);
     setInvShiptoId("");
   };
 
-  // ── FIXED: validation before submitting
   const createInvoiceConfig = async () => {
     setInvValidationMsg("");
-
-    if (!invCustomerId) {
-      setInvValidationMsg("Please select a customer");
-      return;
-    }
-    if (!invShiptoId) {
-      setInvValidationMsg("Please select a Ship To location. If none appear, go to Ship To tab and add one for this customer first.");
-      return;
-    }
+    if (!invCustomerId) { setInvValidationMsg("Please select a customer"); return; }
+    if (!invShiptoId) { setInvValidationMsg("Please select a Ship To location. If none appear, go to Ship To tab and add one for this customer first."); return; }
 
     const validProducts = invProducts
       .filter(p => p.product_id && p.quantity && p.unit_price)
-      .map(p => ({
-        product_id: Number(p.product_id),
-        quantity: Number(p.quantity),
-        unit_price: Number(p.unit_price)
-      }));
+      .map(p => ({ product_id: Number(p.product_id), quantity: Number(p.quantity), unit_price: Number(p.unit_price) }));
 
-    if (validProducts.length === 0) {
-      setInvValidationMsg("Please add at least one product with quantity and unit price");
-      return;
-    }
+    if (validProducts.length === 0) { setInvValidationMsg("Please add at least one product with quantity and unit price"); return; }
 
-    const validFees = invFees
-      .filter(f => f.fee_id)
-      .map(f => ({
-        fee_id: Number(f.fee_id),
-        quantity: Number(f.quantity) || 1,
-        rate: Number(f.rate) || 0
-      }));
-
-    const validTaxes = invTaxes
-      .filter(t => t.tax_id)
-      .map(t => ({
-        tax_id: Number(t.tax_id),
-        basis: Number(t.basis) || 0
-      }));
+    const validFees = invFees.filter(f => f.fee_id).map(f => ({ fee_id: Number(f.fee_id), quantity: Number(f.quantity) || 1, rate: Number(f.rate) || 0 }));
+    const validTaxes = invTaxes.filter(t => t.tax_id).map(t => ({ tax_id: Number(t.tax_id), basis: Number(t.basis) || 0 }));
 
     const ok = await post("invoice-configurations", {
       customer_id: Number(invCustomerId),
       shipto_id: Number(invShiptoId),
+      vendor_id: invVendorId ? Number(invVendorId) : null,
       invoice_time: { hour: 8, minute: 0 },
       products: validProducts,
       fees: validFees,
@@ -446,6 +408,7 @@ export default function App() {
     if (ok) {
       setInvCustomerId("");
       setInvShiptoId("");
+      setInvVendorId("");
       setInvShiptos([]);
       setInvProducts([{ product_id: "", quantity: "", unit_price: "" }]);
       setInvFees([{ fee_id: "", quantity: "1", rate: "" }]);
@@ -842,6 +805,7 @@ export default function App() {
                     <div className="panel-head"><div className="panel-title"><i className="ti ti-file-invoice"></i> New Invoice Config</div></div>
                     <div className="panel-body">
                       {invValidationMsg && <div className="validation-msg"><i className="ti ti-alert-triangle"></i> {invValidationMsg}</div>}
+
                       <div className="form-field">
                         <label className="form-label">Customer</label>
                         <select className="form-select" value={invCustomerId} onChange={e => { setInvCustomerId(e.target.value); loadShiptosForCustomer(e.target.value); setInvValidationMsg(""); }}>
@@ -849,18 +813,26 @@ export default function App() {
                           {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                         </select>
                       </div>
+
                       <div className="form-field">
                         <label className="form-label">
                           Ship To Location
                           {invCustomerId && invShiptos.length === 0 && (
-                            <span style={{ color: "#e94560", marginLeft: 8, fontSize: 11 }}>
-                              — No locations found. Add one in Ship To tab first.
-                            </span>
+                            <span style={{ color: "#e94560", marginLeft: 8, fontSize: 11 }}>— No locations found. Add one in Ship To tab first.</span>
                           )}
                         </label>
                         <select className="form-select" value={invShiptoId} onChange={e => { setInvShiptoId(e.target.value); setInvValidationMsg(""); }}>
                           <option value="">— Select ship to —</option>
                           {invShiptos.map(s => <option key={s.id} value={s.id}>{s.name} — {s.address}</option>)}
+                        </select>
+                      </div>
+
+                      {/* ── NEW: Vendor dropdown ── */}
+                      <div className="form-field">
+                        <label className="form-label">Vendor (Optional)</label>
+                        <select className="form-select" value={invVendorId} onChange={e => setInvVendorId(e.target.value)}>
+                          <option value="">— Select vendor (optional) —</option>
+                          {vendors.map(v => <option key={v.id} value={v.id}>{v.name} — {v.address}</option>)}
                         </select>
                       </div>
 
@@ -920,6 +892,7 @@ export default function App() {
                           </div>
                           <div className="data-card-meta" style={{ marginBottom: 10 }}>
                             <span className="meta-chip"><i className="ti ti-map-pin"></i> {shiptos.find(s => s.id === c.shipto_id)?.name || "—"}</span>
+                            {c.vendor_id && <span className="meta-chip"><i className="ti ti-building-store"></i> {vendors.find(v => v.id === c.vendor_id)?.name || "—"}</span>}
                             <span className="meta-chip"><i className="ti ti-package"></i> {(c.products || []).length} products</span>
                             <span className="meta-chip"><i className="ti ti-receipt"></i> {(c.fees || []).length} fees</span>
                             <span className="meta-chip"><i className="ti ti-percentage"></i> {(c.taxes || []).length} taxes</span>
@@ -935,7 +908,7 @@ export default function App() {
                         </div>
                       ))}
                     </div>
-                  ) : <div className="list-empty"><i className="ti ti-file-invoice"></i>No invoice configurations yet. Create one to generate professional invoices.</div>}
+                  ) : <div className="list-empty"><i className="ti ti-file-invoice"></i>No invoice configurations yet.</div>}
                 </div>
               </div>
             )}
