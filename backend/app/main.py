@@ -35,18 +35,13 @@ app.add_middleware(
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:3000",
-
-        # Render Frontend
-        "https://enterprise-trip-management-system-2.onrender.com",
-
-        # Old Vercel deployment (optional)
         "https://enterprise-trip-management-system-z.vercel.app",
+        "https://enterprise-trip-management-system-2.onrender.com",
     ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 @app.get("/")
 async def root():
     return {"message": "Backend Running Successfully"}
