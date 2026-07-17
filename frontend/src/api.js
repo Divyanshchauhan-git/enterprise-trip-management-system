@@ -1,4 +1,4 @@
-const BASE_URL = 'https://enterprise-trip-management-system.onrender.com'
+const BASE_URL = 'https://enterprise-trip-management-system-1.onrender.com'
 
 function getToken() {
   return localStorage.getItem('token')
