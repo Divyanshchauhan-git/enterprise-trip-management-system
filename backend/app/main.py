@@ -28,12 +28,18 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
         "http://localhost:5174",
         "http://localhost:3000",
+
+        # Render Frontend
+        "https://enterprise-trip-management-system-2.onrender.com",
+
+        # Old Vercel deployment (optional)
         "https://enterprise-trip-management-system-z.vercel.app",
     ],
     allow_credentials=True,
