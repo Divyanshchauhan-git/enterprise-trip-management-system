@@ -20,7 +20,22 @@ from app.models.freight_configuration import FreightConfiguration
 from app.models.email_settings import EmailSettings, EmailSendConfiguration
 from app.models.company_settings import CompanySettings
 
-from app.routers import auth, trips, customers, vendors, products, fees, taxes, shipto, invoice_config, freight_config, document_templates, email_routes, company_settings, pdf
+from app.routers import (
+    auth,
+    trips,
+    customers,
+    vendors,
+    products,
+    fees,
+    taxes,
+    shipto,
+    invoice_config,
+    freight_config,
+    document_templates,
+    email_routes,
+    company_settings,
+    pdf,
+)
 
 load_dotenv()
 
@@ -28,19 +43,19 @@ app = FastAPI()
 
 Base.metadata.create_all(bind=engine)
 
-
 app.add_middleware(
     CORSMiddleware,
-   allow_origins=[
-    "http://localhost:5173",
-    "http://localhost:5174",
-    "http://localhost:3000",
-    "https://enterprise-trip-management-system.vercel.app",
-]
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://localhost:3000",
+        "https://enterprise-trip-management-system.vercel.app",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 @app.get("/")
 async def root():
     return {"message": "Backend Running Successfully"}
