@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const BASE_URL = 'https://enterprise-trip-management-system.onrender.com';
+const BASE = "https://enterprise-trip-management-system.onrender.com";
 const authHeaders = () => ({ "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` });
 
 export default function App() {
