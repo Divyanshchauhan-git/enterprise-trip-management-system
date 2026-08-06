@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
 
 const BASE = "https://enterprise-trip-management-system.onrender.com";
 const authHeaders = () => ({ "Content-Type": "application/json", "Authorization": `Bearer ${localStorage.getItem("token")}` });
@@ -244,6 +245,44 @@ export default function App() {
           <div style={{ marginBottom:14 }}><label style={F.label}>EMAIL ADDRESS</label><input style={F.input} type="email" placeholder="admin@company.com" value={email} onChange={e=>setEmail(e.target.value)}/></div>
           <div style={{ marginBottom:20 }}><label style={F.label}>PASSWORD</label><input style={F.input} type="password" placeholder="••••••••" value={password} onChange={e=>setPassword(e.target.value)} onKeyDown={e=>e.key==="Enter"&&authAction()}/></div>
           <button style={{ width:"100%", padding:"10px", background:"#1b1b1d", border:"none", borderRadius:4, fontSize:14, fontWeight:600, color:"#fff", cursor:"pointer" }} onClick={authAction} disabled={authLoading}>{authLoading?"Please wait…":isSignup?"Create Account":"Sign In"}</button>
+          <div style={{ marginTop: 16 }}>
+          <GoogleLogin
+  onSuccess={async (credentialResponse) => {
+    try {
+      const response = await fetch(`${BASE}/google-login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: credentialResponse.credential,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showToast(data.detail || "Google login failed", "error");
+        return;
+      }
+
+      localStorage.setItem("token", data.access_token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      setUser(data.user);
+
+      showToast("Logged in with Google successfully!");
+
+    } catch (err) {
+      console.error(err);
+      showToast("Connection error", "error");
+    }
+  }}
+  onError={() => {
+    showToast("Google Login Failed", "error");
+  }}
+/>
+</div>
           <div style={{ textAlign:"center", marginTop:14, fontSize:13, color:"#76777d" }}>{isSignup?"Already have an account? ":"Don't have an account? "}<span style={{ color:"#1b1b1d", cursor:"pointer", fontWeight:600, textDecoration:"underline" }} onClick={()=>{setIsSignup(!isSignup);setAuthError("");}}>{isSignup?"Sign in":"Sign up"}</span></div>
         </div>
       </div>

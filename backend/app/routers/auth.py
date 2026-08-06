@@ -5,6 +5,8 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 import bcrypt
 from jose import jwt, JWTError
+from google.oauth2 import id_token
+from google.auth.transport import requests
 from app.database import SessionLocal
 from app.models.user import User
 
@@ -40,6 +42,9 @@ class UserLogin(BaseModel):
     email: str
     password: str
 
+class GoogleLogin(BaseModel):
+    token: str
+
 @router.post("/signup")
 async def signup(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(User).filter(User.email == user.email).first()
@@ -67,3 +72,47 @@ async def login(user: UserLogin, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Incorrect password")
     token = jwt.encode({"sub": str(existing_user.id)}, SECRET_KEY, algorithm=ALGORITHM)
     return {"access_token": token, "token_type": "bearer", "user": {"id": existing_user.id, "username": existing_user.username, "email": existing_user.email}}
+CLIENT_ID = "610409536461-l4tu3vl5hcbe0lobaidllk0ac8vje3qh.apps.googleusercontent.com"
+
+@router.post("/google-login")
+async def google_login(data: GoogleLogin, db: Session = Depends(get_db)):
+    try:
+        info = id_token.verify_oauth2_token(
+            data.token,
+            requests.Request(),
+            CLIENT_ID
+        )
+
+        email = info["email"]
+        name = info.get("name", email.split("@")[0])
+        existing_user = db.query(User).filter(User.email == email).first()
+        if not existing_user:
+            random_password = pwd_context.hash(os.urandom(16).hex())
+
+            existing_user = User(
+                username=name,
+                email=email,
+                password=random_password
+            )
+
+            db.add(existing_user)
+            db.commit()
+            db.refresh(existing_user)
+        token = jwt.encode(
+            {"sub": str(existing_user.id)},
+            SECRET_KEY,
+            algorithm=ALGORITHM
+        )
+
+        return {
+            "access_token": token,
+            "token_type": "bearer",
+            "user": {
+                "id": existing_user.id,
+                "username": existing_user.username,
+                "email": existing_user.email
+            }
+        }
+
+    except ValueError:
+        raise HTTPException(status_code=401, detail="Invalid Google token")
