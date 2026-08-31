@@ -14,7 +14,9 @@ from app.models.user import User
 
 router = APIRouter()
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+GOOGLE_CLIENT_ID = os.getenv(
+    "GOOGLE_CLIENT_ID", "409055532839-fje03tsrgk8mkmn90dqbd4q5g7k1eq5h.apps.googleusercontent.com"
+)
 SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-change-this")
 ALGORITHM = "HS256"
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")

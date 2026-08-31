@@ -5,7 +5,9 @@ export default function GoogleSignIn({ onAuthSuccess, onError, baseUrl }) {
   const [showConfigHelp, setShowConfigHelp] = useState(false);
   const buttonRef = useRef(null);
 
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+  const googleClientId =
+    import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+    "409055532839-fje03tsrgk8mkmn90dqbd4q5g7k1eq5h.apps.googleusercontent.com";
 
   const handleCredentialResponse = async (credential) => {
     setLoading(true);
