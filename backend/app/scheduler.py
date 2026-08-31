@@ -234,5 +234,5 @@ def start_scheduler():
         replace_existing=True
     )
     scheduler.start()
-    # print("[Scheduler] Started — will generate PDFs daily at 8:00 AM")
+    print("[Scheduler] Started — will generate PDFs daily at 8:00 AM")
     return scheduler

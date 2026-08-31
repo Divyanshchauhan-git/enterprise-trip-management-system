@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.venv/
+venv/
+env/
+ENV/
+
+# Build and distribution
+dist/
+dist-ssr/
+build/
+*.egg-info/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases & local files
+*.db
+*.sqlite
+*.sqlite3
+*.log
+*.zip
+
+# Generated Documents & outputs
+generated_documents/
+*.pdf
+
+# Environment files
+.env
+.env.local
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
