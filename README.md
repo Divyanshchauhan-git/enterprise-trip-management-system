@@ -42,6 +42,23 @@ npm install
 npm run dev
 ```
 
+### 3. Google Authentication Setup (Optional)
+To enable **Google Sign-In**:
+1. Go to the [Google Cloud Console Credentials](https://console.cloud.google.com/apis/credentials).
+2. Create an **OAuth 2.0 Client ID** (Application type: *Web application*).
+3. Under **Authorized JavaScript origins**, add:
+   - `http://localhost:5173`
+   - `http://localhost:8001`
+4. Set the client ID in your environment variables:
+   - In `frontend/.env`:
+     ```env
+     VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+     ```
+   - In `backend/.env`:
+     ```env
+     GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+     ```
+
 ---
 
 ## 📄 License

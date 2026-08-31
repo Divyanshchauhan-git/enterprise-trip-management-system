@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import GoogleSignIn from "./components/GoogleSignIn";
 
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:8001";
 const authHeaders = () => ({
@@ -861,6 +862,25 @@ export default function App() {
               </button>
             </form>
 
+            <div style={{ display: "flex", alignItems: "center", margin: "20px 0 16px 0", gap: 12 }}>
+              <div style={{ flex: 1, height: 1, background: "rgba(255, 255, 255, 0.08)" }} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: "#64748b", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                Or continue with
+              </span>
+              <div style={{ flex: 1, height: 1, background: "rgba(255, 255, 255, 0.08)" }} />
+            </div>
+
+            <GoogleSignIn
+              baseUrl={BASE}
+              onAuthSuccess={(data) => {
+                setUser(data.user);
+                localStorage.setItem("user", JSON.stringify(data.user));
+                localStorage.setItem("token", data.access_token);
+                showToast(`Welcome, ${data.user.username}! Authenticated via Google.`);
+              }}
+              onError={(errMsg) => setAuthError(errMsg)}
+            />
+
             <div style={{ marginTop: 24, textAlign: "center", fontSize: 13, color: "#64748b" }}>
               {isSignup ? "Already registered as an operator? " : "Need to set up a new fleet manager? "}
               <button
@@ -1198,8 +1218,12 @@ export default function App() {
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "6px 8px" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#4f46e5", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0 }}>
-                {initials}
+              <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#4f46e5", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, overflow: "hidden" }}>
+                {user?.avatar_url ? (
+                  <img src={user.avatar_url} alt={user.username} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  initials
+                )}
               </div>
               <div style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, color: "#f8fafc", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
